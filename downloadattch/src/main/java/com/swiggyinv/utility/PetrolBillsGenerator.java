@@ -36,15 +36,15 @@ public class PetrolBillsGenerator {
 
 	public static void main(String[] args) throws IOException {
 		// Initialize variables
-		int billsRequiredOf = 184000;
-		int eachBillOf = 2000;
+		int billsRequiredOf = 509000;
+		int eachBillOf = 3500;
 		int billsToCreate = billsRequiredOf / eachBillOf;
 		int billsToCreateMonthly = billsToCreate / 12;
 		int remainingBills = billsToCreate % 12;
-		double[] petrolMonPrices = { 101.81, 105.41, 89.62, 96.72, 96.72, 96.72, 96.72, 96.72, 96.72, 96.72, 96.72,
-				96.72 };
-		LocalDate startDate = LocalDate.of(2022, Month.APRIL, 1);
-		LocalDate endDate = LocalDate.of(2023, Month.MARCH, 1);
+		double[] petrolMonPrices = { 97.22, 97.49, 97.25, 97.34, 97.27, 97.25, 97.49, 97.57, 97.26, 97.29, 97.19,
+				97.32 };
+		LocalDate startDate = LocalDate.of(2023, Month.APRIL, 1);
+		LocalDate endDate = LocalDate.of(2024, Month.MARCH, 1);
 		int i = 0;
 
 		// Create a new PDF document

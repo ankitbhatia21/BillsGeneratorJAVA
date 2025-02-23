@@ -44,8 +44,8 @@ public class GmailDownloadAttch {
 //	private static final String startDate = "2022-01-01T00:00:00Z";
 //	private static final String endDate = "2022-12-31T23:59:59Z";
 	private static final String SUBJECT_KEYWORD = "Your Swiggy order";
-	private static final String startDate = "2020-04-01";
-	private static final String endDate = "2021-04-01";
+	private static final String startDate = "2023-04-01";
+	private static final String endDate = "2024-04-01";
 
 	public static void main(String[] args) throws IOException, GeneralSecurityException {
 		// Build a new authorized API client service.
@@ -74,23 +74,18 @@ public class GmailDownloadAttch {
 
 		List<String> htmlContents = new ArrayList<>();
 		for (Message message : messages) {
-			Message msg = service.users().messages().get(USER_ID, message.getId()).setFormat("full").execute();
-			MessagePart payload = msg.getPayload();
-			String mimeType = payload.getMimeType();
-			if (mimeType.equals("text/html")) {
-				byte[] data = payload.getBody().decodeData();
-				String html = new String(data, StandardCharsets.UTF_8);
-				htmlContents.add(html);
-			}
-
+		    Message msg = service.users().messages().get(USER_ID, message.getId()).setFormat("full").execute();
+		    MessagePart payload = msg.getPayload();
+		    processPayload(payload, htmlContents);
 		}
+
 		Collections.reverse(htmlContents); // for sorting 
 		
 		String htmlStrForPDF = "";
 		double totalSum = 0.0;
 		for (String msg : htmlContents) {
-			String output = msg.replaceAll("\\b2021\\b", "2023");
-			String html = output.replaceAll("\\b2020\\b", "2022");
+			String output = msg.replaceAll("\\b2024\\b", "2025");
+			String html = output.replaceAll("\\b2023\\b", "2024");
 			htmlStrForPDF += html;
 
 			Document doc = Jsoup.parse(html);
@@ -135,5 +130,25 @@ public class GmailDownloadAttch {
 		Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
 		// returns an authorized Credential object.
 		return credential;
+	}
+	
+	private static void processPayload(MessagePart payload, List<String> htmlContents) {
+	    String mimeType = payload.getMimeType();
+	    System.out.println(mimeType);
+
+	    if (mimeType.equals("text/html")) {
+	        // Handle HTML content
+	        byte[] data = payload.getBody().decodeData();
+	        String html = new String(data, StandardCharsets.UTF_8);
+	        htmlContents.add(html);
+	    } else if (mimeType.startsWith("multipart/")) {
+	        // Handle multipart content (e.g., multipart/mixed, multipart/alternative)
+	        List<MessagePart> parts = payload.getParts();
+	        if (parts != null) {
+	            for (MessagePart part : parts) {
+	                processPayload(part, htmlContents); // Recursively process each part
+	            }
+	        }
+	    }
 	}
 }
